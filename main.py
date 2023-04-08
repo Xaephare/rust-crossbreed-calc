@@ -4,13 +4,10 @@ from bit_converter import BitConverter
 
 plants = []
 
-with open('dataset.csv', 'r') as csvfile:
+with open('binary_plants.csv', 'r') as csvfile:
     data = csv.reader(csvfile)
     for row in data:
         plants.append(row)
-
-# print(plants)
-
 
 bit_vector_list = BitConverter().binary_plant(plants)
 
