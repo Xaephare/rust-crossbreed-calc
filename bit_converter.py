@@ -33,7 +33,8 @@ class BitConverter:
         '''Converts a bit vector to a list of string triplets'''
         triplets = []
         for i in range(0, len(bit_vector), 3):
-            triplets.append(''.join(bit_vector[i:i+3]))
+            triplet = ''.join(str(bit) for bit in bit_vector[i:i+3])
+            triplets.append(triplet)
         return triplets
 
     def string_plant(self, bit_vector_list):
