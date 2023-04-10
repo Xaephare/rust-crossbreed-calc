@@ -31,23 +31,17 @@ class CrossBreeder:
                     if gene == 1:
                         gene_table[4] += 0.6  # gene H
                         last_h = True
-                        print('H')
                 elif i % 3 == 2:
                     if red_gene == 1:  # genes W and X
                         if gene == 0:
                             gene_table[0] += 1  # gene W
-                            print('W')
                         else:
                             gene_table[1] += 1  # gene X
-                            print('X') 
                     elif last_h:
                         last_h = False
                         continue
                     else:  # genes Y and G
                         if gene == 0:
                             gene_table[2] += 0.6  # gene Y
-                            print('Y')
                         else:
-                            gene_table[3] += 0.6  # gene G\
-                            print('G')
-            print(gene_table)
+                            gene_table[3] += 0.6  # gene G
