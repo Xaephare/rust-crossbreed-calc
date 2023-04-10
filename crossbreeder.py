@@ -21,28 +21,23 @@ class CrossBreeder:
         child = []
         red_gene = None # flag to track red gene
         last_h = False # flag to track last gene
-        gene_table = [0,0,0,0,0] # [W, X, Y, G, H]
-        # Add up the genes from parent plants
-        for plant in parents:
-            for i, gene in enumerate(plant):
-                if i % 3 == 0:
-                    red_gene = gene
-                elif i % 3 == 1 and red_gene == 0:
-                    if gene == 1:
-                        gene_table[4] += 0.6  # gene H
-                        last_h = True
-                elif i % 3 == 2:
-                    if red_gene == 1:  # genes W and X
-                        if gene == 0:
-                            gene_table[0] += 1  # gene W
-                        else:
-                            gene_table[1] += 1  # gene X
-                    elif last_h:
-                        last_h = False
-                        continue
-                    else:  # genes Y and G
-                        if gene == 0:
-                            gene_table[2] += 0.6  # gene Y
-                        else:
-                            gene_table[3] += 0.6  # gene G
+        gene_indices = [0, 3, 6, 9, 12, 15]
+        gene_table = [0, 0, 0, 0, 0]
+        for gene_index in gene_indices:
+            for plant in parents: # [W, X, Y, G, H]
+                red_gene = plant[gene_index]
+                if not red_gene and plant[gene_index+1] == 1:
+                    gene_table[4] += 0.6  # gene H
+                    last_h = True
+                elif red_gene: # genes W and X
+                    if plant[gene_index+2] == 0:
+                        gene_table[0] += 1  # gene W
+                    else:
+                        gene_table[1] += 1  # gene X
+                else:  # genes Y and G
+                    if plant[gene_index+2] == 0:
+                        gene_table[2] += 0.6  # gene Y
+                    else:
+                        gene_table[3] += 0.6  # gene G
             print(gene_table)
+        return child
