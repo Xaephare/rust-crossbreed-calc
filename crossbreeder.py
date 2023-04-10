@@ -20,26 +20,34 @@ class CrossBreeder:
     def gene_counter(self, parents):
         child = []
         red_gene = None # flag to track red gene
-        for i in range(18):
-            gene_table = [0,0,0,0,0] # [W, X, Y, G, H]
-
-            # Add up the genes from parent plants
-            for plant in parents:
-                for i, gene in enumerate(plant):
-                    if i == 0 or i % 4 == 3:
-                        red_gene = gene
-                    elif i % 2 == 1 and red_gene == 0:
-                        if gene == 1:
-                            gene_table[4] += 0.6  # gene H
-                    elif i % 3 == 2:
-                        if red_gene == 1:  # genes W and X
-                            if gene == 0:
-                                gene_table[0] += 1  # gene W
-                            else:
-                                gene_table[1] += 1  # gene X
-                        else:  # genes Y and G
-                            if gene == 0:
-                                gene_table[2] += 0.6  # gene Y
-                            else:
-                                gene_table[3] += 0.6  # gene G
-        print(gene_table)
+        last_h = False # flag to track last gene
+        gene_table = [0,0,0,0,0] # [W, X, Y, G, H]
+        # Add up the genes from parent plants
+        for plant in parents:
+            for i, gene in enumerate(plant):
+                if i % 3 == 0:
+                    red_gene = gene
+                elif i % 3 == 1 and red_gene == 0:
+                    if gene == 1:
+                        gene_table[4] += 0.6  # gene H
+                        last_h = True
+                        print('H')
+                elif i % 3 == 2:
+                    if red_gene == 1:  # genes W and X
+                        if gene == 0:
+                            gene_table[0] += 1  # gene W
+                            print('W')
+                        else:
+                            gene_table[1] += 1  # gene X
+                            print('X') 
+                    elif last_h:
+                        last_h = False
+                        continue
+                    else:  # genes Y and G
+                        if gene == 0:
+                            gene_table[2] += 0.6  # gene Y
+                            print('Y')
+                        else:
+                            gene_table[3] += 0.6  # gene G\
+                            print('G')
+            print(gene_table)
