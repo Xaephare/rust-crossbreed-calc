@@ -45,3 +45,4 @@ class CrossBreeder:
                             gene_table[2] += 0.6  # gene Y
                         else:
                             gene_table[3] += 0.6  # gene G
+            print(gene_table)
