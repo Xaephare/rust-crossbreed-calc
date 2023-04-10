@@ -17,18 +17,15 @@ class CrossBreeder:
 
         return pruned_list
 
-    def gene_counter(self, parents):
-        child = []
+    def crossbreed(self, parents):
         red_gene = None # flag to track red gene
-        last_h = False # flag to track last gene
-        gene_indices = [0, 3, 6, 9, 12, 15]
-        gene_table = [0, 0, 0, 0, 0]
+        gene_indices = [0, 3, 6, 9, 12, 15] # jumps through binary by gene size (3 bits)
         for gene_index in gene_indices:
+            gene_table = [0, 0, 0, 0, 0]
             for plant in parents: # [W, X, Y, G, H]
                 red_gene = plant[gene_index]
                 if not red_gene and plant[gene_index+1] == 1:
                     gene_table[4] += 0.6  # gene H
-                    last_h = True
                 elif red_gene: # genes W and X
                     if plant[gene_index+2] == 0:
                         gene_table[0] += 1  # gene W
@@ -39,5 +36,7 @@ class CrossBreeder:
                         gene_table[2] += 0.6  # gene Y
                     else:
                         gene_table[3] += 0.6  # gene G
-            print(gene_table)
-        return child
+            max_indices = [i for i, x in enumerate(gene_table) if x == max(gene_table)]
+            print(max_indices)
+            # TODO: if max_indices > 1, then we need to do some combination
+        return gene_table
