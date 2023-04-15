@@ -15,7 +15,7 @@ class BitConverter:
     def binary_plant(self, plant_list):
         '''Converts a list of plants to a list of bit vectors'''
         all_plants_binary = []
-        genes = [[bit for bit in plant[0]] for plant in plant_list]
+        genes = [[bit for bit in plant] for plant in plant_list]
         gene_dict = {
             'W': '100',
             'X': '101',
