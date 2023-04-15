@@ -21,8 +21,8 @@ class CrossBreeder:
         red_gene = None # flag to track red gene
         gene_indices = [0, 3, 6, 9, 12, 15] # jumps through binary by gene size (3 bits)
         for gene_index in gene_indices:
-            gene_table = [0, 0, 0, 0, 0]
-            for plant in parents: # [W, X, Y, G, H]
+            gene_table = [0, 0, 0, 0, 0] # [W, X, Y, G, H]
+            for plant in parents:
                 red_gene = plant[gene_index]
                 if not red_gene and plant[gene_index+1] == 1:
                     gene_table[4] += 0.6  # gene H
@@ -40,3 +40,4 @@ class CrossBreeder:
             print(max_indices)
             # TODO: if max_indices > 1, then we need to do some combination
         return gene_table
+        
