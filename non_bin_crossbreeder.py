@@ -57,10 +57,15 @@ class CrossBreeder:
                     if child not in all_children:
                         all_children.append(child)
 
-        all_children = self.fitness(all_children)
-        split_children = [list(group) for key, group in itertools.groupby(all_children, lambda x: x[0] >= FITNESS_CUTTOFF) if key]
+        split_children = self.fitness_split(all_children)
+
         return split_children
 
+
+    def fitness_split(self, plants):
+        rated_plants = self.fitness(plants)
+        split_list = [list(group) for key, group in itertools.groupby(rated_plants, lambda x: x[0] >= FITNESS_CUTTOFF) if key]
+        return split_list
 
     def crossbreed(self, plants):
         pass
