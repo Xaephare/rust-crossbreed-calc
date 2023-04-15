@@ -7,7 +7,7 @@ class CrossBreeder:
     def __init__(self):
         pass
 
-    def fitness(self, plants):
+    def add_fitness(self, plants):
         """Returns the fitness of a plant"""
         fit_plants = []
         for plant in plants:
@@ -22,19 +22,24 @@ class CrossBreeder:
         sorted_plants = sorted(fit_plants, key=lambda x: x[0], reverse=True)
         return sorted_plants
 
+    def remove_fitness(self, plants):
+        """Removes the fitness from the plants"""
+        for i in range(len(plants)):
+            plants[i] = plants[i][1]
+        return plants
 
     def q_crossbreed(self, plants):  # quick crossbreed
         """Prunes the plant list and crossbreeds the 8 fittest plants"""
         all_combos = []
-        plants = self.fitness(plants)
+        plants = self.add_fitness(plants)  # sorts the plants by fitness then removes fitness value
+        fittest_parent = max(plants)
+        print(f'fittest_parent: {fittest_parent}')  # TODO: remove
+        plants = self.remove_fitness(plants)
         for r in range(2,9):
             for combination in itertools.combinations(plants[:8], r):
-                print (combination)
                 try:
                     all_children = self.crossbreed(combination)
-                    fittest_parent = max(plants)
-                    print(f'fittest_parent: {fittest_parent}')  # TODO: remove
-                    split_children = self.fitness_split(all_children)
+                    split_children = self.fitness_split(all_children, cutoff=fittest_parent[0])
                     all_combos.append(split_children)
                 except:
                     print('ERR: Crossbreed failed')
@@ -43,14 +48,14 @@ class CrossBreeder:
 
 
     def fitness_split(self, plants, cutoff=FITNESS_CUTTOFF):  # splits the plants into a smaller list based on FITNESS_CUTTOFF
-        rated_plants = self.fitness(plants)
+        rated_plants = self.add_fitness(plants)
         split_list = [list(group) for key, group in itertools.groupby(rated_plants, lambda x: x[0] >= cutoff) if key]
         return split_list
 
     def crossbreed(self, plants):
         """Crossbreeds a list of up to plants"""
         # TODO: allow for multiple uses of the same plant
-        rated_plants = self.fitness(plants)
+        rated_plants = self.add_fitness(plants)
         if len(rated_plants) > 8 or len(rated_plants) < 2:
             print(f'ERR: Incorrect amount of parent plants for crossbreed. amount: {len(rated_plants)}')
         else:
