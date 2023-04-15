@@ -1,6 +1,6 @@
 import itertools
 
-FITNESS_CUTTOFF = 11  # the fitness cuttoff for the fitness_split function
+FITNESS_CUTTOFF = 10  # the fitness cuttoff for the fitness_split function
 
 
 class CrossBreeder:
@@ -13,8 +13,13 @@ class CrossBreeder:
         for plant in plants:
             fitness = 0
             for gene in plant:
-                if gene == 'Y' or gene == 'G':
+                gene_count = plant.count(gene)
+                if gene_count > 4:
+                    fitness += 0
+                elif gene == 'Y' or gene == 'G':
                     fitness += 2
+                elif gene == 'W' or gene == 'X':
+                    fitness += 0
                 else:
                     fitness += 1
             rated_plant = (fitness, plant)
@@ -29,32 +34,62 @@ class CrossBreeder:
         return plants
 
     def q_crossbreed(self, plants):  # quick crossbreed
-        """Prunes the plant list and crossbreeds the 8 fittest plants"""
+        """Prunes the plant list and crossbreeds the 8 fittest plants
+        returns list of all children of higher tier than parents"""
         all_combos = []
         plants = self.add_fitness(plants)  # sorts the plants by fitness then removes fitness value
         fittest_parent = max(plants)
         print(f'fittest_parent: {fittest_parent}')  # TODO: remove
         plants = self.remove_fitness(plants)
+        plants = plants[:8]
+        counter = 0
+
+        for item in plants:  # allows use of the same plant twice
+            if counter == 8:
+                counter = 0
+                break
+            plants.append(item)
+            counter += 1
+        chances = []
         for r in range(2,9):
-            for combination in itertools.combinations(plants[:8], r):
+            for combination in itertools.combinations(plants, r):
+                counter += 1
+                # print(f'counter: {counter}')  # TODO: remove
                 try:
-                    all_children = self.crossbreed(combination)
+                    all_children, chance = self.crossbreed(combination)
+                    chances.append(chance, len(all_children))
                     split_children = self.fitness_split(all_children, cutoff=fittest_parent[0])
-                    all_combos.append(split_children)
+                    if split_children not in all_combos and split_children:
+                        for child in split_children:
+                            if child not in all_combos:
+                                all_combos.append(child)
                 except:
                     print('ERR: Crossbreed failed')
                     return None
-        return all_combos
+        
+        if all_combos:
+            print(f"chances: {chances}")
+            return all_combos
+        else:
+            print('ERR: No children of higher tier than parents found')
+        return None
 
 
     def fitness_split(self, plants, cutoff=FITNESS_CUTTOFF):  # splits the plants into a smaller list based on FITNESS_CUTTOFF
         rated_plants = self.add_fitness(plants)
-        split_list = [list(group) for key, group in itertools.groupby(rated_plants, lambda x: x[0] >= cutoff) if key]
+        if cutoff == 12:  # Allows display of god plants even if best parent is already a god plant
+            cutoff = 11
+        split_list = []
+        for key, group in itertools.groupby(rated_plants, lambda x: x[0] > cutoff):
+            if key:
+                sublist = list(group)
+                for item in sublist:
+                    if item not in split_list:
+                        split_list.append(item)
         return split_list
 
     def crossbreed(self, plants):
         """Crossbreeds a list of up to plants"""
-        # TODO: allow for multiple uses of the same plant
         rated_plants = self.add_fitness(plants)
         if len(rated_plants) > 8 or len(rated_plants) < 2:
             print(f'ERR: Incorrect amount of parent plants for crossbreed. amount: {len(rated_plants)}')
@@ -88,7 +123,8 @@ class CrossBreeder:
                         if child not in all_children and child:
                             all_children.append(child)
 
+                    chance = (100 / len(children))
             if not all_children:
                 print('ERR: No children found')
                 return None
-            return all_children
+            return all_children, chance
