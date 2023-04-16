@@ -1,6 +1,6 @@
 import itertools
 
-FITNESS_CUTTOFF = 10  # the fitness cuttoff for the fitness_split function
+FITNESS_CUTOFF = 10  # the fitness cutoff for the fitness_split function
 
 
 class CrossBreeder:
@@ -51,22 +51,23 @@ class CrossBreeder:
             plants.append(item)
             counter += 1
         chances = []
-        for r in range(2,9):
+        for r in range(2, 9):
             for combination in itertools.combinations(plants, r):
                 counter += 1
                 # print(f'counter: {counter}')  # TODO: remove
                 try:
                     all_children, chance = self.crossbreed(combination)
-                    chances.append(chance, len(all_children))
                     split_children = self.fitness_split(all_children, cutoff=fittest_parent[0])
                     if split_children not in all_combos and split_children:
                         for child in split_children:
                             if child not in all_combos:
+                                chances.append(chance)
+                                print(f"parents: {combination}")
                                 all_combos.append(child)
                 except:
                     print('ERR: Crossbreed failed')
                     return None
-        
+
         if all_combos:
             print(f"chances: {chances}")
             return all_combos
@@ -74,8 +75,8 @@ class CrossBreeder:
             print('ERR: No children of higher tier than parents found')
         return None
 
-
-    def fitness_split(self, plants, cutoff=FITNESS_CUTTOFF):  # splits the plants into a smaller list based on FITNESS_CUTTOFF
+    def fitness_split(self, plants,
+                      cutoff=FITNESS_CUTOFF):  # splits the plants into a smaller list based on FITNESS_CUTOFF
         rated_plants = self.add_fitness(plants)
         if cutoff == 12:  # Allows display of god plants even if best parent is already a god plant
             cutoff = 11
@@ -90,6 +91,7 @@ class CrossBreeder:
 
     def crossbreed(self, plants):
         """Crossbreeds a list of up to plants"""
+        chance = 0
         rated_plants = self.add_fitness(plants)
         if len(rated_plants) > 8 or len(rated_plants) < 2:
             print(f'ERR: Incorrect amount of parent plants for crossbreed. amount: {len(rated_plants)}')
@@ -101,7 +103,7 @@ class CrossBreeder:
 
             for i in range(len(rated_plants)):  # add the 8 first plants to the parents list
                 parents.append(rated_plants[i][1])
-                child = [[],[],[],[],[],[]]
+                child = [[], [], [], [], [], []]
 
                 if len(parents) >= 2:
                     for j in range(6):
