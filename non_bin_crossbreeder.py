@@ -1,4 +1,5 @@
 import itertools
+import threading
 
 FITNESS_CUTOFF = 10  # the fitness cutoff for the fitness_split function
 
@@ -111,29 +112,34 @@ def q_crossbreed(plants):  # quick crossbreed
     plants = plants[:8]
     counter = 0
     results = []
+    lock = threading.Lock()  # Add a lock to synchronize access to shared variables
 
-    for item in plants:  # allows use of the same plant twice
-        if counter == 8:
-            counter = 0
-            break
-        plants.append(item)
-        counter += 1
-
-    for r in range(2, 9):
-        for combination in itertools.combinations(plants, r):
-            counter += 1
-            try:
-                all_children, chance = crossbreed(combination)
-                split_children = fitness_split(all_children, cutoff=fittest_parent[0])
-                if split_children not in all_combos and split_children:
+    def crossbreed_helper(combination):
+        nonlocal counter, results
+        try:
+            all_children, chance = crossbreed(combination)
+            split_children = fitness_split(all_children, cutoff=fittest_parent[0])
+            if split_children not in all_combos and split_children:
+                with lock:
                     for child in split_children:
                         if child not in all_combos:
                             all_combos.append(child)
                             results.append([combination, child[1], chance, child[0]])
+            counter += 1
+        except:
+            print('ERR: Crossbreed failed')
 
-            except:
-                print('ERR: Crossbreed failed')
-                return None
+    threads = []
+    for r in range(2, 9):
+        for combination in itertools.combinations(plants, r):
+            # Use threading to parallelize crossbreeding for each combination
+            t = threading.Thread(target=crossbreed_helper, args=(combination,))
+            t.start()
+            threads.append(t)
+
+    # Wait for all threads to finish
+    for t in threads:
+        t.join()
 
     if results:
         results = output_sorter(results)
