@@ -114,17 +114,17 @@ def q_crossbreed(plants):  # quick crossbreed
     results = []
     lock = threading.Lock()  # Add a lock to synchronize access to shared variables
 
-    def crossbreed_helper(combination):
+    def crossbreed_helper(parents):
         nonlocal counter, results
         try:
-            all_children, chance = crossbreed(combination)
+            all_children, chance = crossbreed(parents)
             split_children = fitness_split(all_children, cutoff=fittest_parent[0])
             if split_children not in all_combos and split_children:
                 with lock:
                     for child in split_children:
                         if child not in all_combos:
                             all_combos.append(child)
-                            results.append([combination, child[1], chance, child[0]])
+                            results.append([parents, child[1], chance, child[0]])
             counter += 1
         except:
             print('ERR: Crossbreed failed')
