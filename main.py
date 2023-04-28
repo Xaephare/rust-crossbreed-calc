@@ -1,6 +1,7 @@
 import csv
+import time
 
-from non_bin_crossbreeder import CrossBreeder
+from crossbreeder import q_crossbreed
 
 plants = []
 
@@ -9,18 +10,11 @@ with open('rand_dataset.csv', 'r') as csvfile:
     for row in data:
         plants.append(row[0])
 
-# fittest = CrossBreeder().fitness(plants)
-# print(fittest) 
+start_time = time.perf_counter()
 
-quick_options = CrossBreeder().q_crossbreed(plants)
-print(f"quick_options: {quick_options}")
+quick_options = q_crossbreed(plants)
 
-# bit_vector_list = BitConverter().binary_plant(plants)
-# pruned = CrossBreeder().prune(bit_vector_list)
-
-# with open('binary_plants.csv', 'w', newline='') as csvfile:
-#     data = csv.writer(csvfile)
-#     for plant in bit_vector_list:
-#         data.writerow(plant)
-
-# crossbreeds = CrossBreeder().crossbreed(bit_vector_list)
+end_time = time.perf_counter()
+elapsed_time = end_time - start_time
+print(f"Quick options: {quick_options}")
+print("Elapsed time: {:.2f} seconds".format(elapsed_time))
