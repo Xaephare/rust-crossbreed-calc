@@ -5,12 +5,12 @@ import mss
 from PIL import Image
 
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
 TESS_CONFIG = '--psm 11'
 
 # coordinates of the gene display in the game. These are the coordinates for a 1920x1080 screen
 # internal and external refer to inside and outside of the inventory respectively
-internal_boundbox = {'top': 297, 'left': 795, 'width': 160, 'height': 20}
+internal_boundbox = {'top': 294, 'left': 795, 'width': 160, 'height': 30}
 external_boundbox = {'top': 365, 'left': 1170, 'width': 260, 'height': 30}
 
 
@@ -20,6 +20,10 @@ def get_grayscale(image):
 
 def upscale(image):
     return cv2.resize(image, None, fx=4, fy=4, interpolation=cv2.INTER_CUBIC)
+
+
+def gaussian_blur(image):
+    return cv2.GaussianBlur(image, (3, 3), 0)
 
 
 def pre_process(image):
@@ -39,7 +43,8 @@ def gene_is_valid(gene):
 def ocr_scan(image, genes_list):
     try:
         text = pytesseract.image_to_string(image, config=TESS_CONFIG)
-        gene = ''.join(letter.upper() for letter in text.split() if gene_is_valid(letter.upper()))
+        text = text.replace(' ', '')
+        gene = ''.join(letter.upper() for letter in text if gene_is_valid(letter.upper()))
         
         if gene in  genes_list:
             return
@@ -56,13 +61,15 @@ genes = []
 while True:
     internal_grab = sct.grab(internal_boundbox)
     internal_grab = pre_process(internal_grab)
-    internal_grab = cv2.threshold(internal_grab, 180, 255, cv2.THRESH_BINARY_INV)[1]
+    internal_grab = cv2.threshold(internal_grab, 175, 255, cv2.THRESH_BINARY_INV)[1]
+    internal_grab = gaussian_blur(internal_grab)
     internal_img = Image.fromarray(internal_grab)
     cv2.imshow('Internal', internal_grab)
 
     external_grab = sct.grab(external_boundbox)
     external_grab = pre_process(external_grab)
     external_grab = cv2.threshold(external_grab, 150, 255, cv2.THRESH_BINARY_INV)[1]
+    external_grab = gaussian_blur(external_grab)
     external_img = Image.fromarray(external_grab)
     cv2.imshow('External', external_grab)
 
