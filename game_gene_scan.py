@@ -4,7 +4,6 @@ import pytesseract
 import mss
 from PIL import Image
 
-
 pytesseract.pytesseract.tesseract_cmd = r'C:/Program Files/Tesseract-OCR/tesseract.exe'
 TESS_CONFIG = '--psm 11'
 
@@ -45,14 +44,15 @@ def ocr_scan(image, genes_list):
         text = pytesseract.image_to_string(image, config=TESS_CONFIG)
         text = text.replace(' ', '')
         gene = ''.join(letter.upper() for letter in text if gene_is_valid(letter.upper()))
-        
-        if gene in  genes_list:
+
+        if gene in genes_list:
             return
         elif len(gene) == 6:
             return gene
     except:
         print('error')
     return
+
 
 sct = mss.mss()
 
@@ -73,14 +73,13 @@ while True:
     external_img = Image.fromarray(external_grab)
     cv2.imshow('External', external_grab)
 
-    if ocr_scan(internal_img, genes) :
+    if ocr_scan(internal_img, genes):
         genes.append(ocr_scan(internal_img, genes))
         print(genes)
     if ocr_scan(external_img, genes):
         genes.append(ocr_scan(external_img, genes))
         print(genes)
-    
-    
+
     if (cv2.waitKey(1) & 0xFF) == ord('q'):
         cv2.destroyAllWindows()
         break
